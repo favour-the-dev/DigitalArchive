@@ -1,32 +1,20 @@
 "use client";
-
 import MotionWrapper from "@/app/helpers/MotionHelper";
 import Link from "next/link";
 import { FaFileArchive, FaEye, FaEyeSlash } from "react-icons/fa";
 import { ChevronLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { loginSchema, LoginFormData } from "@/schemas/schema";
+import { signIn, getSession } from "next-auth/react";
 import { useState } from "react";
-
-// Zod validation schema
-const loginSchema = z.object({
-  email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Please enter a valid email address"),
-  password: z
-    .string()
-    .min(1, "Password is required")
-    .min(6, "Password must be at least 6 characters long"),
-  rememberMe: z.boolean().optional(),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   const {
     register,
@@ -37,16 +25,20 @@ function Login() {
     defaultValues: {
       email: "",
       password: "",
-      rememberMe: false,
+      // rememberMe: false,
     },
   });
 
   const onSubmit = async (data: LoginFormData) => {
     setIsSubmitting(true);
     try {
-      // Handle login logic here
-      console.log("Login data:", data);
-      // Add your authentication logic
+      const res = await signIn("credentials", { ...data, redirect: false });
+      if (res?.error) {
+        toast.error("Invalid credentials"); // always comes back here
+        return;
+      }
+      toast.success("Login successful!");
+      router.push("/");
     } catch (error) {
       console.error("Login error:", error);
     } finally {
@@ -152,8 +144,8 @@ function Login() {
           </div>
 
           {/* Remember Me and Forgot Password */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
+          <div className="w-full flex items-end justify-end">
+            {/* <div className="flex items-center space-x-2">
               <input
                 {...register("rememberMe")}
                 type="checkbox"
@@ -166,7 +158,7 @@ function Login() {
               >
                 Remember me
               </label>
-            </div>
+            </div> */}
             <Link
               href="/forgot-password"
               className="text-sm text-brightPurple hover:text-[#EBD3F8] transition-colors underline"

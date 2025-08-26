@@ -1,5 +1,4 @@
 "use client";
-
 import MotionWrapper from "@/app/helpers/MotionHelper";
 import Link from "next/link";
 import {
@@ -11,8 +10,10 @@ import {
 import { ChevronLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { SignupFormData, signupSchema } from "@/schemas/schema";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 // Role options
 const roles = [
@@ -21,51 +22,19 @@ const roles = [
   { value: "admin", label: "Admin" },
 ] as const;
 
-// Zod validation schema
-const signupSchema = z
-  .object({
-    fullName: z
-      .string()
-      .min(1, "Full name is required")
-      .min(2, "Full name must be at least 2 characters long")
-      .regex(/^[a-zA-Z\s]+$/, "Full name can only contain letters and spaces"),
-    email: z
-      .string()
-      .min(1, "Email is required")
-      .email("Please enter a valid email address"),
-    password: z
-      .string()
-      .min(1, "Password is required")
-      .min(8, "Password must be at least 8 characters long")
-      .regex(
-        /(?=.*[a-z])/,
-        "Password must contain at least one lowercase letter"
-      )
-      .regex(
-        /(?=.*[A-Z])/,
-        "Password must contain at least one uppercase letter"
-      )
-      .regex(/(?=.*\d)/, "Password must contain at least one number"),
-    confirmPassword: z.string().min(1, "Please confirm your password"),
-    role: z.enum(["student", "lecturer", "admin"]),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
-
-type SignupFormData = z.infer<typeof signupSchema>;
-
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiError, setApiError] = useState<string>("");
+  const router = useRouter();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch,
+    setError,
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -74,17 +43,56 @@ function Signup() {
       password: "",
       confirmPassword: "",
       role: "student",
+      matricNumber: "",
     },
   });
 
   const onSubmit = async (data: SignupFormData) => {
     setIsSubmitting(true);
+    setApiError("");
+
     try {
-      // Handle signup logic here
-      console.log("Signup data:", data);
-      // Add your registration logic
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        // Handle validation errors from the server
+        if (result.errors) {
+          // Set specific field errors
+          Object.entries(result.errors).forEach(([field, messages]) => {
+            if (Array.isArray(messages) && messages.length > 0) {
+              setError(field as keyof SignupFormData, {
+                type: "server",
+                message: messages[0],
+              });
+            }
+          });
+        } else {
+          // Set general error message
+          setApiError(result.message || "Registration failed");
+          toast.error(result.message || "Registration failed");
+        }
+        return;
+      }
+
+      // Success - show success message and redirect
+      toast.success("Account created successfully! Please log in.");
+
+      // Redirect to login page after a short delay
+      setTimeout(() => {
+        router.push("/login");
+      }, 1500);
     } catch (error) {
       console.error("Signup error:", error);
+      setApiError("Network error. Please try again.");
+      toast.error("Network error. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -129,6 +137,13 @@ function Signup() {
       {/* form */}
       <MotionWrapper className="w-[80%] md:w-1/3 mt-6 overflow-y-scroll">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* General API Error */}
+          {apiError && (
+            <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-3 rounded-lg text-sm">
+              {apiError}
+            </div>
+          )}
+
           {/* Full Name Field */}
           <div className="space-y-2">
             <label
@@ -215,6 +230,34 @@ function Signup() {
               <p className="text-red-500 text-xs mt-1">{errors.role.message}</p>
             )}
           </div>
+
+          {/* Matriculation Number Field - Only for students */}
+          {watch("role") === "student" && (
+            <div className="space-y-2">
+              <label
+                htmlFor="matricNumber"
+                className="block text-sm font-medium text-[#EBD3F8]"
+              >
+                Matriculation Number
+              </label>
+              <input
+                {...register("matricNumber")}
+                type="text"
+                id="matricNumber"
+                className={`w-full px-4 py-3 bg-transparent border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${
+                  errors.matricNumber
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-600 focus:border-brightPurple focus:ring-brightPurple"
+                }`}
+                placeholder="e.g., u2019/5570108"
+              />
+              {errors.matricNumber && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.matricNumber.message}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Password Field */}
           <div className="space-y-2">
