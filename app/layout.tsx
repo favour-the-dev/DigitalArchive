@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Playfair_Display, Poppins } from "next/font/google";
+import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
+import Provider from "./providers/provider";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { Toaster } from "react-hot-toast";
@@ -33,14 +34,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${poppins.className} antialiased`}
-      >
-        <Toaster />
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
-      </body>
+      <Provider>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} ${poppins.className} antialiased`}
+        >
+          <Toaster />
+          <Navbar />
+          <main>{children}</main>
+          <Footer />
+        </body>
+      </Provider>
     </html>
   );
 }
