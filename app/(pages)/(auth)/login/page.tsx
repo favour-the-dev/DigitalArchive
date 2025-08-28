@@ -10,12 +10,13 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { useSession } from "next-auth/react";
 
 function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-
+  const session = useSession();
   const {
     register,
     handleSubmit,
@@ -37,15 +38,22 @@ function Login() {
         toast.error("Invalid credentials"); // always comes back here
         return;
       }
-      toast.success("Login successful!");
-      router.push("/");
+      if (session.data?.user?.role === "student") {
+        router.push("/student/dashboard");
+        toast.success("Welcome Student");
+      } else if (session.data?.user?.role === "admin") {
+        router.push("/admin/dashboard");
+        toast.success("Welcome Admin");
+      } else {
+        router.push("/lecturer/dashboard");
+        toast.success("Welcome Lecturer");
+      }
     } catch (error) {
       console.error("Login error:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
-
   return (
     <section className="fixed inset-0 z-[500] w-full bg-darkBg text-white flex flex-col items-center justify-center">
       <Link

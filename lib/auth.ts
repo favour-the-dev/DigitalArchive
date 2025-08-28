@@ -36,12 +36,37 @@ export const authOptions: NextAuthOptions = {
 
         await user.updateLastLogin();
 
-        return user;
+        return {
+            id: user._id.toString(),
+            email: user.email,
+            name: user.name || user.email,
+            role: user.role,
+          }
       },
         }),
     ],
     session:{
         strategy: "jwt",
         maxAge: 30 * 24 * 60 * 60, // 30 days
-    }
+    },
+    callbacks: {
+    async jwt({ token, user }) {
+      // On first login, persist user data into token
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id,
+          role: token.role,
+        },
+      };
+    },
+  },
 }

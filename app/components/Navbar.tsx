@@ -3,10 +3,13 @@ import { CiLogin } from "react-icons/ci";
 import { FaFileArchive } from "react-icons/fa";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 
 function Navbar() {
   const [navScrolled, setNavScrolled] = useState(false);
-
+  const session = useSession();
+  const pathname = usePathname();
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
@@ -20,6 +23,15 @@ function Navbar() {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  if (
+    session.status === "authenticated" ||
+    pathname.startsWith("/student") ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/lecturer")
+  ) {
+    return null;
+  }
   return (
     <nav
       className={`sticky top-0 left-0 right-0 z-50 w-full text-white shadow-md p-3 duration-300 ease-in-out 

@@ -28,7 +28,7 @@ export async function POST(request) {
     await connectDB()
 
     // Check if user already exists
-    const existingUser = await User.findByEmail(email)
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return NextResponse.json(
         { 
@@ -93,7 +93,7 @@ export async function POST(request) {
     }, { status: 201 })
 
   } catch (error) {
-    console.error('Registration error:', error)
+    console.error('Registration error:', error.message, error.stack);
 
     // Handle mongoose validation errors
     if (error.name === 'ValidationError') {
