@@ -6,7 +6,7 @@ export default function SignOutBtn() {
   return (
     <button
       onClick={() => signOut({ callbackUrl: "/" })}
-      className="flex items-center"
+      className="cursor-pointer flex items-center"
     >
       <LogOut className="mr-2" />
       <span className="">Sign Out</span>

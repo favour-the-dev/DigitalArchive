@@ -6,7 +6,7 @@ import { ChevronLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginFormData } from "@/schemas/schema";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -16,7 +16,6 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
-  const session = useSession();
   const {
     register,
     handleSubmit,
@@ -38,10 +37,15 @@ function Login() {
         toast.error("Invalid credentials"); // always comes back here
         return;
       }
-      if (session.data?.user?.role === "student") {
+      const session = await getSession();
+      if (!session) {
+        toast.error("error: an error occured try again!");
+        return;
+      }
+      if (session.user?.role === "student") {
         router.push("/student/dashboard");
         toast.success("Welcome Student");
-      } else if (session.data?.user?.role === "admin") {
+      } else if (session.user?.role === "admin") {
         router.push("/admin/dashboard");
         toast.success("Welcome Admin");
       } else {
