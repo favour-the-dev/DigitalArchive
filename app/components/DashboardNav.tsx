@@ -2,7 +2,16 @@
 import { FaFileArchive } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 import { Menu, X, Bell } from "lucide-react";
-import { LayoutDashboard, Search, Book, Settings } from "lucide-react";
+import {
+  LayoutDashboard,
+  Search,
+  Book,
+  Settings,
+  Upload,
+  File,
+  Users,
+  List,
+} from "lucide-react";
 import { useState } from "react";
 import {
   DropdownMenu,
@@ -13,7 +22,7 @@ import Link from "next/link";
 import SignOutBtn from "@/actions/auth";
 import useStore from "@/store/store";
 function DashboardNav() {
-  const pathName = usePathname();
+  const pathname = usePathname();
   const user = useStore((state) => state.userProfile);
 
   const studentLinks = [
@@ -26,11 +35,41 @@ function DashboardNav() {
     { name: "My Downloads", href: "/student/downloads", Icon: Book },
     { name: "Settings", href: "/student/settings", Icon: Settings },
   ];
+  const lecturerLinks = [
+    { name: "Dashboard", href: "/lecturer/dashboard", Icon: LayoutDashboard },
+    {
+      name: "Upload Documents",
+      href: "/lecturer/upload-documents",
+      Icon: Upload,
+    },
+    { name: "My Uploads", href: "/lecturer/my-uploads", Icon: File },
+    { name: "Settings", href: "/lecturer/settings", Icon: Settings },
+  ];
+
+  const adminLinks = [
+    { name: "Dashboard", href: "/admin/dashboard", Icon: LayoutDashboard },
+    { name: "User Management", href: "/admin/user-management", Icon: Users },
+    { name: "Content Approval", href: "/admin/content-approval", Icon: List },
+    { name: "System Logs", href: "/admin/system-logs", Icon: File },
+    { name: "Settings", href: "/admin/settings", Icon: Settings },
+  ];
 
   const studentNavLinkHeaders = [
     {
       path: "/student/dashboard",
       title: "Student Dashboard",
+    },
+  ];
+  const lecturerNavLinkHeaders = [
+    {
+      path: "/lecturer/dashboard",
+      title: "Lecturer Dashboard",
+    },
+  ];
+  const adminNavLinkHeaders = [
+    {
+      path: "/admin/dashboard",
+      title: "Admin Dashboard",
     },
   ];
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -74,20 +113,57 @@ function DashboardNav() {
                   </span>
                 </div>
                 <div className="mt-4">
-                  {user &&
-                    user?.role === "student" &&
-                    studentLinks.map(({ name, href, Icon }) => (
-                      <Link
-                        onClick={() => setIsNavOpen(false)}
-                        key={name}
-                        href={href}
-                        className={`my-1 flex items-center gap-2 p-3 hover:bg-brightPurple/30 
-                        ${pathName === href ? "bg-brightPurple/30" : ""}`}
-                      >
-                        <Icon className="text-lg" />
-                        <span className="text-sm font-medium">{name}</span>
-                      </Link>
-                    ))}
+                  {user && user?.role === "student"
+                    ? studentLinks.map(({ name, href, Icon }) => (
+                        <Link
+                          onClick={() => setIsNavOpen(false)}
+                          key={name}
+                          href={href}
+                          className={`my-1 flex items-center gap-2 p-3 hover:bg-brightPurple/30 
+                                  ${
+                                    pathname === href
+                                      ? "bg-brightPurple/30"
+                                      : ""
+                                  }`}
+                        >
+                          <Icon className="text-lg" />
+                          <span className="text-sm font-medium">{name}</span>
+                        </Link>
+                      ))
+                    : user?.role === "lecturer"
+                    ? lecturerLinks.map(({ name, href, Icon }) => (
+                        <Link
+                          onClick={() => setIsNavOpen(false)}
+                          key={name}
+                          href={href}
+                          className={`my-1 flex items-center gap-2 p-3 hover:bg-brightPurple/30 
+                                  ${
+                                    pathname === href
+                                      ? "bg-brightPurple/30"
+                                      : ""
+                                  }`}
+                        >
+                          <Icon className="text-lg" />
+                          <span className="text-sm font-medium">{name}</span>
+                        </Link>
+                      ))
+                    : user?.role === "admin" &&
+                      adminLinks.map(({ name, href, Icon }) => (
+                        <Link
+                          onClick={() => setIsNavOpen(false)}
+                          key={name}
+                          href={href}
+                          className={`my-1 flex items-center gap-2 p-3 hover:bg-brightPurple/30 
+                                  ${
+                                    pathname === href
+                                      ? "bg-brightPurple/30"
+                                      : ""
+                                  }`}
+                        >
+                          <Icon className="text-lg" />
+                          <span className="text-sm font-medium">{name}</span>
+                        </Link>
+                      ))}
                 </div>
               </div>
               <div className="flex flex-col gap-5">
@@ -116,10 +192,16 @@ function DashboardNav() {
           </div>
           {/* title based on path Name */}
           <h1 className="md:text-lg font-bold">
-            {
-              studentNavLinkHeaders.find((link) => link.path === pathName)
-                ?.title
-            }
+            {user && user?.role === "student"
+              ? studentNavLinkHeaders.find((link) => link.path === pathname)
+                  ?.title
+              : user?.role === "lecturer"
+              ? lecturerNavLinkHeaders.find((link) => link.path === pathname)
+                  ?.title
+              : user?.role === "admin"
+              ? adminNavLinkHeaders.find((link) => link.path === pathname)
+                  ?.title
+              : ""}
           </h1>
         </div>
 

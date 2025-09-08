@@ -84,7 +84,9 @@ function StudentDashboard() {
         />
       </div>
       <div className="mt-4 flex flex-col gap-3">
-        <h2 className="md:text-lg">Recently Added Documents</h2>
+        <h2 className="md:text-lg text-lightPurple">
+          Recently Added Documents
+        </h2>
         <div className="border border-brightPurple/50 rounded-md">
           {recentActivity.map((activity, index) => (
             <StudentActivityCard key={index} {...activity} />

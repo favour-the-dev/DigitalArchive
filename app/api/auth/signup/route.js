@@ -5,10 +5,7 @@ import { signupSchema } from '../../../../schemas/schema'
 
 export async function POST(request) {
   try {
-    // Parse request body
     const body = await request.json()
-
-    // Validate request data
     const validationResult = signupSchema.safeParse(body)
     
     if (!validationResult.success) {
@@ -23,11 +20,7 @@ export async function POST(request) {
     }
 
     const { fullName, email, password, role, matricNumber } = validationResult.data
-
-    // Connect to database
     await connectDB()
-
-    // Check if user already exists
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return NextResponse.json(
@@ -38,8 +31,6 @@ export async function POST(request) {
         { status: 409 }
       )
     }
-
-    // Check if matriculation number already exists (for students)
     if (role === "student" && matricNumber) {
       const existingMatricNumber = await User.findOne({ matricNumber })
       if (existingMatricNumber) {
@@ -52,17 +43,14 @@ export async function POST(request) {
         )
       }
     }
-
-    // Create new user (password will be hashed automatically by pre-save hook)
     const userData = {
       email: email.toLowerCase().trim(),
       password,
       fullName: fullName.trim(),
-      name: fullName.trim(), // Also set name field for backward compatibility
+      name: fullName.trim(),
       role: role,
     }
 
-    // Add matriculation number for students
     if (role === "student" && matricNumber) {
       userData.matricNumber = matricNumber.trim()
     }
@@ -70,7 +58,6 @@ export async function POST(request) {
     const newUser = new User(userData)
     const savedUser = await newUser.save()
 
-    // Return success response (without password)
     const userResponse = {
       id: savedUser._id.toString(),
       email: savedUser.email,
@@ -81,7 +68,6 @@ export async function POST(request) {
       createdAt: savedUser.createdAt,
     }
 
-    // Include matriculation number in response for students
     if (savedUser.matricNumber) {
       userResponse.matricNumber = savedUser.matricNumber
     }
@@ -95,7 +81,6 @@ export async function POST(request) {
   } catch (error) {
     console.error('Registration error:', error.message, error.stack);
 
-    // Handle mongoose validation errors
     if (error.name === 'ValidationError') {
       const errors = Object.values(error.errors).map(err => err.message)
       return NextResponse.json({ 
@@ -105,7 +90,6 @@ export async function POST(request) {
       }, { status: 400 })
     }
 
-    // Handle duplicate key error (shouldn't happen due to our check, but just in case)
     if (error.code === 11000) {
       const field = Object.keys(error.keyPattern)[0]
       const message = field === 'matricNumber' 

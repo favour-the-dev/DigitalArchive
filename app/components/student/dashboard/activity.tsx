@@ -1,4 +1,5 @@
 import { Download } from "lucide-react";
+
 interface activityCardProps {
   title: string;
   dept: string;
