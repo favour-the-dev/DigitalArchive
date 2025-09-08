@@ -3,7 +3,6 @@ import { FaFileArchive } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 import { Menu, X, Bell } from "lucide-react";
 import { LayoutDashboard, Search, Book, Settings } from "lucide-react";
-import { useSession } from "next-auth/react";
 import { useState } from "react";
 import {
   DropdownMenu,
@@ -12,9 +11,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import SignOutBtn from "@/actions/auth";
+import useStore from "@/store/store";
 function DashboardNav() {
   const pathName = usePathname();
-  const session = useSession();
+  const user = useStore((state) => state.userProfile);
 
   const studentLinks = [
     { name: "Dashboard", href: "/student/dashboard", Icon: LayoutDashboard },
@@ -74,7 +74,8 @@ function DashboardNav() {
                   </span>
                 </div>
                 <div className="mt-4">
-                  {session?.data?.user?.role === "student" &&
+                  {user &&
+                    user?.role === "student" &&
                     studentLinks.map(({ name, href, Icon }) => (
                       <Link
                         onClick={() => setIsNavOpen(false)}
@@ -91,13 +92,11 @@ function DashboardNav() {
               </div>
               <div className="flex flex-col gap-5">
                 {/* profile data */}
-                {session && (
+                {user && (
                   <div className="flex flex-col">
-                    <p className="text-xs text-gray-400">
-                      {session?.data?.user?.email}
-                    </p>
+                    <p className="text-xs text-gray-400">{user?.email}</p>
                     <p className="text-xs text-blue-300 capitalize">
-                      {session?.data?.user?.role}
+                      {user?.role}
                     </p>
                   </div>
                 )}
@@ -136,17 +135,14 @@ function DashboardNav() {
                   className="w-8 h-8  rounded-full 
             flex items-center justify-center p-2 bg-brightPurple/80"
                 >
-                  {session?.data?.user?.name?.charAt(0).toUpperCase()}
+                  {user?.name?.charAt(0).toUpperCase()}
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="p-0 border-0 bg-transparent">
                 <div className="bg-mainPurple text-[#EBD3F8] p-3">
-                  <p className="text-sm font-medium capitalize">
-                    {session?.data?.user?.name}
-                  </p>
+                  <p className="text-sm font-medium capitalize">{user?.name}</p>
                   <p className="text-xs">
-                    {session?.data?.user?.role === "student" &&
-                      session?.data?.user?.matricNumber}
+                    {user?.role === "student" && user?.matricNumber}
                   </p>
                 </div>
               </DropdownMenuContent>
@@ -158,16 +154,13 @@ function DashboardNav() {
               className="w-8 h-8  rounded-full 
             flex items-center justify-center p-2 bg-brightPurple/80"
             >
-              {session?.data?.user?.name?.charAt(0).toUpperCase()}
+              {user?.name?.charAt(0).toUpperCase()}
             </div>
 
             <div className="">
-              <p className="text-sm font-medium capitalize">
-                {session?.data?.user?.name}
-              </p>
+              <p className="text-sm font-medium capitalize">{user?.name}</p>
               <p className="text-xs">
-                {session?.data?.user?.role === "student" &&
-                  session?.data?.user?.matricNumber}
+                {user?.role === "student" && user?.matricNumber}
               </p>
             </div>
           </div>

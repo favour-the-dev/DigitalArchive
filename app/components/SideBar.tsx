@@ -3,7 +3,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import SignOutBtn from "@/actions/auth";
 import { LayoutDashboard, Search, Book, Settings } from "lucide-react";
-import { useSession } from "next-auth/react";
+import useStore from "@/store/store";
 
 const studentLinks = [
   { name: "Dashboard", href: "/student/dashboard", Icon: LayoutDashboard },
@@ -14,13 +14,14 @@ const studentLinks = [
 
 function SideBar() {
   const pathname = usePathname();
-  const session = useSession();
+  const user = useStore((state) => state.userProfile);
 
   return (
     <aside className="w-[275px] border-r border-r-gray-100/10 hidden md:flex flex-col justify-between bg-mainPurple text-[#EBD3F8] py-5 px-3">
       <div className="flex flex-col gap-3">
         <div className="mt-4">
-          {session?.data?.user?.role === "student" &&
+          {user &&
+            user?.role === "student" &&
             studentLinks.map(({ name, href, Icon }) => (
               <Link
                 key={name}
@@ -36,14 +37,10 @@ function SideBar() {
       </div>
       <div className="flex flex-col gap-5">
         {/* profile data */}
-        {session && (
+        {user && (
           <div className="flex flex-col">
-            <p className="text-xs text-gray-400">
-              {session?.data?.user?.email}
-            </p>
-            <p className="text-xs text-blue-300 capitalize">
-              {session?.data?.user?.role}
-            </p>
+            <p className="text-xs text-gray-400">{user?.email}</p>
+            <p className="text-xs text-blue-300 capitalize">{user?.role}</p>
           </div>
         )}
         <hr className="h-[0.5px] border-gray-100/10" />

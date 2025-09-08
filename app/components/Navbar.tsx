@@ -5,10 +5,10 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
-
+import useStore from "@/store/store";
 function Navbar() {
   const [navScrolled, setNavScrolled] = useState(false);
-  const session = useSession();
+  const session = useStore((state) => state.session);
   const pathname = usePathname();
   useEffect(() => {
     const handleScroll = () => {
@@ -25,7 +25,7 @@ function Navbar() {
   }, []);
 
   if (
-    session.status === "authenticated" ||
+    session === "authenticated" ||
     pathname.startsWith("/student") ||
     pathname.startsWith("/admin") ||
     pathname.startsWith("/lecturer")

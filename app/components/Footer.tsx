@@ -1,12 +1,12 @@
 "use client";
-import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import useStore from "@/store/store";
 function Footer() {
   const currentDate = new Date().getFullYear();
-  const session = useSession();
   const pathname = usePathname();
+  const session = useStore((state) => state.session);
   if (
-    session.status === "authenticated" ||
+    session === "authenticated" ||
     pathname.startsWith("/student") ||
     pathname.startsWith("/admin") ||
     pathname.startsWith("/lecturer")

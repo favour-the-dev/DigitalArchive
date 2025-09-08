@@ -1,8 +1,12 @@
+import { Download } from "lucide-react";
 interface activityCardProps {
   title: string;
   dept: string;
   level: number;
   category: string;
+  createdAt?: Date | string;
+  time: string;
+  size?: string;
 }
 
 function StudentActivityCard({
@@ -10,6 +14,9 @@ function StudentActivityCard({
   dept,
   level,
   category,
+  createdAt,
+  time,
+  size,
 }: activityCardProps) {
   return (
     <div
@@ -22,12 +29,24 @@ function StudentActivityCard({
           <span>{dept}</span> | <span>{level} level</span>
         </div>
       </div>
-      <span
-        className="w-fit bg-brightPurple/30 text-brightPurple text-sm px-3 py-1 
+      <div className="flex flex-col gap-2">
+        <div className="w-full flex items-center md:justify-end gap-2">
+          <span
+            className="w-fit bg-brightPurple/30 text-brightPurple text-sm px-3 py-1 
       rounded-md font-medium"
-      >
-        {category}
-      </span>
+          >
+            {category}
+          </span>
+          <span className="flex items-center gap-1 text-xs text-gray-400 group hover:text-brightPurple cursor-pointer duration-200 ease-in-out">
+            <Download className="w-4 h-4 text-gray-400 group-hover:text-brightPurple duration-200 ease-in-out" />
+            Download
+          </span>
+        </div>
+        <div className="text-gray-500 text-xs font-medium flex items-center gap-2">
+          <span>{createdAt ? new Date(createdAt).toDateString() : "N/A"}</span>{" "}
+          | <span>{time}</span> | <span>{size ? size : "N/A"}</span>
+        </div>
+      </div>
     </div>
   );
 }

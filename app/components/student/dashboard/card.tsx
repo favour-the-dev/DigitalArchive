@@ -1,5 +1,5 @@
 import Link from "next/link";
-import MotionWrapper from "@/app/helpers/MotionHelper";
+
 interface dashboardCardProps {
   icon: React.JSX.Element;
   color: string;
@@ -20,20 +20,18 @@ function DashboardCard({
   label,
 }: dashboardCardProps) {
   return (
-    <MotionWrapper>
-      <div className="border border-dashed border-brightPurple rounded-sm runded-md p-5 flex flex-col gap-3">
-        <div className="flex items-center gap-3">
-          <div className={`p-4 rounded-xl ${color} text-white`}>{icon}</div>
-          <div className="flex flex-col gap-1">
-            <h2 className={`${textColor}`}>{title}</h2>
-            <p className="text-gray-400 text-xs">{desc}</p>
-          </div>
+    <div className="border border-dashed border-brightPurple rounded-sm runded-md p-5 flex flex-col gap-3">
+      <div className="flex items-center gap-3">
+        <div className={`p-4 rounded-xl ${color} text-white`}>{icon}</div>
+        <div className="flex flex-col gap-1">
+          <h2 className={`${textColor}`}>{title}</h2>
+          <p className="text-gray-400 text-xs">{desc}</p>
         </div>
-        <Link href={href} className={`${textColor} text-xs`}>
-          {label}
-        </Link>
       </div>
-    </MotionWrapper>
+      <Link href={href} className={`${textColor} text-xs`}>
+        {label}
+      </Link>
+    </div>
   );
 }
 
