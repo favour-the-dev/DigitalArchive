@@ -1,5 +1,5 @@
-import StudentActivityCard from "./activityCard";
-function StudentActivity() {
+import LecturerActivityCard from "./activityCard";
+function LecturerActivity() {
   const recentActivity = [
     {
       title: "Introduction to Computer Science",
@@ -7,6 +7,7 @@ function StudentActivity() {
       level: 100,
       category: "Lecture Notes",
       createdAt: "2024-06-10",
+      status: "approved",
       time: "2 hours ago",
       size: "1.2 MB",
     },
@@ -16,6 +17,7 @@ function StudentActivity() {
       level: 100,
       category: "Assignment",
       createdAt: "2024-06-12",
+      status: "pending",
       time: "1 day ago",
       size: "500 KB",
     },
@@ -25,6 +27,7 @@ function StudentActivity() {
       level: 300,
       category: "Past Questions",
       createdAt: "2024-06-11",
+      status: "rejected",
       time: "3 days ago",
       size: "750 KB",
     },
@@ -34,6 +37,7 @@ function StudentActivity() {
       level: 400,
       category: "Lab Manual",
       createdAt: "2024-06-09",
+      status: "approved",
       time: "5 days ago",
       size: "2 MB",
     },
@@ -43,20 +47,21 @@ function StudentActivity() {
       level: 400,
       category: "Final Year Project",
       createdAt: "2024-06-08",
+      status: "rejected",
       time: "1 week ago",
       size: "3.5 MB",
     },
   ];
   return (
     <div className="mt-4 flex flex-col gap-3">
-      <h2 className="md:text-lg">Recently Added Documents</h2>
+      <h2 className="md:text-lg">Recent Uploads</h2>
       <div className="border border-brightPurple/50 rounded-md">
         {recentActivity.map((activity, index) => (
-          <StudentActivityCard key={index} {...activity} />
+          <LecturerActivityCard key={index} {...activity} />
         ))}
       </div>
     </div>
   );
 }
 
-export default StudentActivity;
+export default LecturerActivity;

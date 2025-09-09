@@ -9,6 +9,7 @@ interface IUser extends Document {
   name?: string;
   role: "student" | "lecturer" | "admin";
   matricNumber?: string;
+  dignitary?: string;
   isActive: boolean;
   lastLogin?: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -69,6 +70,15 @@ const UserSchema = new mongoose.Schema<IUser, IUserModel>({
       /^u\d{4}\/\d+$/, 
       "Matriculation number must be in the format u2019/5570108"
     ]
+  },
+  dignitary: {
+    type: String,
+    trim: true,
+    default: "Prof.",
+    required: function() {
+      return this.role === "lecturer";
+    },
+    enum: ['Prof.', 'Dr.', 'Mr.', 'Ms.', 'Mrs.']
   },
   isActive: {
     type: Boolean,

@@ -9,6 +9,7 @@ declare module "next-auth" {
             name: string;
             role: string;
             matricNumber?: string;
+            dignitary?: string;
         }
     }
 
@@ -18,6 +19,7 @@ declare module "next-auth" {
         name: string;
         role: string;
         matricNumber?: string;
+        dignitary?: string;
     }
 }
 
@@ -26,5 +28,6 @@ declare module "next-auth/jwt" {
         id: string;
         role: string;
         matricNumber?: string;
+        dignitary?: string;
     }
 }

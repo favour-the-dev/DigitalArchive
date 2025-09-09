@@ -6,6 +6,7 @@ export type UserProfile = {
     name: string;
     role: "student" | "lecturer" | "admin";
     matricNumber?: string | null;
+    dignitary?: string | null;
 }
 
 interface appStoreProps {

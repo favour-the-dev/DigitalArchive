@@ -43,6 +43,7 @@ export const signupSchema = z
     confirmPassword: z.string().min(1, "Please confirm your password"),
     role: z.enum(["student", "lecturer", "admin"]),
     matricNumber: z.string().optional(),
+    dignitary: z.enum(['Prof.', 'Dr.', 'Mr.', 'Ms.', 'Mrs.']).optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -70,6 +71,17 @@ export const signupSchema = z
     {
       message: "Matriculation number must be in the format u2019/5570108",
       path: ["matricNumber"],
+    }
+  ).refine(
+    (data) => {
+      if (data.role === "lecturer") {
+        return data.dignitary && data.dignitary.trim() !== "";
+      }
+      return true;
+    },
+    {
+      message: "dignitary is required for lecturers",
+      path: ["dignitary"],
     }
   );
 

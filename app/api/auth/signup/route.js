@@ -19,7 +19,7 @@ export async function POST(request) {
       )
     }
 
-    const { fullName, email, password, role, matricNumber } = validationResult.data
+    const { fullName, email, password, role, matricNumber, dignitary } = validationResult.data
     await connectDB()
     const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
@@ -55,6 +55,10 @@ export async function POST(request) {
       userData.matricNumber = matricNumber.trim()
     }
 
+    if(role === "lecturer" && dignitary) {
+      userData.dignitary = dignitary.trim()
+    }
+
     const newUser = new User(userData)
     const savedUser = await newUser.save()
 
@@ -70,6 +74,10 @@ export async function POST(request) {
 
     if (savedUser.matricNumber) {
       userResponse.matricNumber = savedUser.matricNumber
+    }
+
+    if(savedUser.role === "lecturer" && savedUser.dignitary) {
+      userResponse.dignitary = savedUser.dignitary
     }
 
     return NextResponse.json({

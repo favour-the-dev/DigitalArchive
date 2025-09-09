@@ -42,6 +42,7 @@ export const authOptions: NextAuthOptions = {
             name: user.name || user.email,
             role: user.role,
             matricNumber: user.matricNumber || null,
+            dignitary: user.dignitary || null,
           }
       },
         }),
@@ -57,6 +58,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.role = user.role;
         token.matricNumber = user.matricNumber ?? undefined;
+        token.dignitary = user.dignitary ?? undefined;
       }
       return token;
     },
@@ -68,6 +70,7 @@ export const authOptions: NextAuthOptions = {
           id: token.id,
           role: token.role,
           matricNumber: token.matricNumber || null,
+          dignitary: token.dignitary || null,
         },
       };
     },

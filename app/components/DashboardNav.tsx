@@ -73,6 +73,18 @@ function DashboardNav() {
     },
   ];
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const getRoleColor = (role: string) => {
+    switch (role) {
+      case "admin":
+        return "text-red-500";
+      case "student":
+        return "text-blue-500";
+      case "lecturer":
+        return "text-green-500";
+      default:
+        return "";
+    }
+  };
   return (
     <nav
       className={`relative w-full flex items-center justify-center border-b p-4 md:p-0 border-b-gray-100/10 shadow-sm bg-mainPurple text-[#EBD3F8]`}
@@ -171,7 +183,11 @@ function DashboardNav() {
                 {user && (
                   <div className="flex flex-col">
                     <p className="text-xs text-gray-400">{user?.email}</p>
-                    <p className="text-xs text-blue-300 capitalize">
+                    <p
+                      className={`text-xs ${getRoleColor(
+                        user?.role ?? ""
+                      )} capitalize`}
+                    >
                       {user?.role}
                     </p>
                   </div>
@@ -222,7 +238,10 @@ function DashboardNav() {
               </DropdownMenuTrigger>
               <DropdownMenuContent className="p-0 border-0 bg-transparent">
                 <div className="bg-mainPurple text-[#EBD3F8] p-3">
-                  <p className="text-sm font-medium capitalize">{user?.name}</p>
+                  <p className="text-sm font-medium capitalize">
+                    {user && user?.role === "lecturer" && user?.dignitary}{" "}
+                    {user?.name}
+                  </p>
                   <p className="text-xs">
                     {user?.role === "student" && user?.matricNumber}
                   </p>
@@ -240,7 +259,10 @@ function DashboardNav() {
             </div>
 
             <div className="">
-              <p className="text-sm font-medium capitalize">{user?.name}</p>
+              <p className="text-sm font-medium capitalize">
+                {user && user?.role === "lecturer" && user?.dignitary}{" "}
+                {user?.name}
+              </p>
               <p className="text-xs">
                 {user?.role === "student" && user?.matricNumber}
               </p>

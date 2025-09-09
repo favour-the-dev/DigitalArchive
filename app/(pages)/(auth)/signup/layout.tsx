@@ -10,5 +10,9 @@ export default function SignupLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return (
+    <section className="w-screen h-screen fixed inset-0 z-[500]">
+      {children}
+    </section>
+  );
 }

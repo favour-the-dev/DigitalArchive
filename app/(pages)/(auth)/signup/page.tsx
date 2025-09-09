@@ -15,19 +15,18 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-// Role options
-const roles = [
-  { value: "student", label: "Student" },
-  { value: "lecturer", label: "Lecturer" },
-  { value: "admin", label: "Admin" },
-] as const;
-
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string>("");
   const router = useRouter();
+  const roles = [
+    { value: "student", label: "Student" },
+    { value: "lecturer", label: "Lecturer" },
+    // { value: "admin", label: "Admin" },
+  ] as const;
+  const dignitarys = ["Prof.", "Dr.", "Mr.", "Ms.", "Mrs."] as const;
 
   const {
     register,
@@ -44,13 +43,13 @@ function Signup() {
       confirmPassword: "",
       role: "student",
       matricNumber: "",
+      dignitary: "Prof.",
     },
   });
 
   const onSubmit = async (data: SignupFormData) => {
     setIsSubmitting(true);
     setApiError("");
-
     try {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
@@ -63,9 +62,7 @@ function Signup() {
       const result = await response.json();
 
       if (!response.ok) {
-        // Handle validation errors from the server
         if (result.errors) {
-          // Set specific field errors
           Object.entries(result.errors).forEach(([field, messages]) => {
             if (Array.isArray(messages) && messages.length > 0) {
               setError(field as keyof SignupFormData, {
@@ -75,17 +72,12 @@ function Signup() {
             }
           });
         } else {
-          // Set general error message
           setApiError(result.message || "Registration failed");
           toast.error(result.message || "Registration failed");
         }
         return;
       }
-
-      // Success - show success message and redirect
       toast.success("Account created successfully! Please log in.");
-
-      // Redirect to login page after a short delay
       setTimeout(() => {
         router.push("/login");
       }, 1500);
@@ -99,7 +91,7 @@ function Signup() {
   };
 
   return (
-    <section className="fixed inset-0 z-[500] w-full bg-darkBg text-white flex flex-col items-center justify-center py-8">
+    <section className="w-full h-full bg-darkBg text-white flex flex-col items-center justify-center py-8 overflow-y-auto">
       <Link
         href="/"
         className="absolute top-[15px] left-[15px] text-sm text-brightPurple cursor-pointer flex items-center gap-1 mb-1"
@@ -135,7 +127,7 @@ function Signup() {
       </MotionWrapper>
 
       {/* form */}
-      <MotionWrapper className="w-[80%] md:w-1/3 mt-6 overflow-y-scroll">
+      <MotionWrapper className="w-[80%] md:max-h-[50dvh] md:w-1/3 mt-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {/* General API Error */}
           {apiError && (
@@ -254,6 +246,40 @@ function Signup() {
               {errors.matricNumber && (
                 <p className="text-red-500 text-xs mt-1">
                   {errors.matricNumber.message}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* dignitary Dropdown - Only for lecturers */}
+          {watch("role") === "lecturer" && (
+            <div className="space-y-2">
+              <label
+                htmlFor="dignitary"
+                className="block text-sm font-medium text-[#EBD3F8]"
+              >
+                Lecturer Title
+              </label>
+              <select
+                {...register("dignitary")}
+                className={`w-full px-3 py-4 bg-darkBg border rounded-lg text-white focus:outline-none focus:ring-2 transition-all ${
+                  errors.dignitary
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-600 focus:border-brightPurple focus:ring-brightPurple"
+                }`}
+              >
+                <option value="" disabled>
+                  Select a dignitary
+                </option>
+                {dignitarys.map((dignitary) => (
+                  <option key={dignitary} value={dignitary}>
+                    {dignitary}
+                  </option>
+                ))}
+              </select>
+              {errors.dignitary && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.dignitary.message}
                 </p>
               )}
             </div>
